@@ -270,8 +270,6 @@ public class GameBoardController implements GameInstance.TetriminoUpdateListener
    */
   @FXML
   public void gameOver() {
-    System.out.println("Game over!");
-
     //Save score before exiting
     ScoreRecorder.saveScore(scoreLabel.getText());
 
