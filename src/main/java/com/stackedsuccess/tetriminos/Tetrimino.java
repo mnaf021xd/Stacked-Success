@@ -8,7 +8,7 @@ public abstract class Tetrimino {
   protected int width;
   protected int height;
 
-  public boolean hasHardDropped = false;
+  private boolean hasHardDropped = false;
 
   protected int xPos;
   protected int yPos;
