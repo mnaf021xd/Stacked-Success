@@ -205,7 +205,7 @@ public abstract class Tetrimino {
     this.yPos = yPos;
   }
 
-  public boolean GetHasHardDropped() {
+  public boolean getHasHardDropped() {
     return hasHardDropped;
   }
 
