@@ -3,6 +3,7 @@ package com.stackedsuccess.controllers;
 import com.stackedsuccess.GameInstance;
 import com.stackedsuccess.ScoreRecorder;
 import com.stackedsuccess.tetriminos.Tetrimino;
+import java.io.IOException;
 import java.util.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -24,12 +25,14 @@ public class GameBoardController implements GameInstance.TetriminoUpdateListener
 
     @FXML Label scoreLabel;
     @FXML Label levelLabel;
+    @FXML Label lineLabel;
 
     @FXML ImageView holdPieceView;
     @FXML ImageView nextPieceView;
 
     private GameInstance gameInstance = new GameInstance();
     private int score = 0;
+    private int line = 0;
     private ArrayList<Node> previousGhostTetrominos = new ArrayList<>();
 
     /**
@@ -43,6 +46,7 @@ public class GameBoardController implements GameInstance.TetriminoUpdateListener
 
         scoreLabel.setText("Score:" + score);
         levelLabel.setText("Level: 1");
+        lineLabel.setText("Line: " + line);
         displayGrid.gridLinesVisibleProperty().set(true);
         gameInstance.setTetriminoUpdateListener(this);
         Platform.runLater(
@@ -236,6 +240,15 @@ public class GameBoardController implements GameInstance.TetriminoUpdateListener
     }
 
     /**
+     * Updates the line displayed on the game board.
+     *
+     * @param line the current level
+     */
+    public void updateLine(int line) {
+        Platform.runLater(() -> lineLabel.setText("Line: " + line));
+    }
+
+    /**
      * Updates the level displayed on the game board.
      *
      * @param level the current level
@@ -263,16 +276,18 @@ public class GameBoardController implements GameInstance.TetriminoUpdateListener
         Image image = new Image("/images/" + tetrimino.getClass().getSimpleName() + ".png");
         holdPieceView.setImage(image);
     }
-  
-  /**
-   * Method for handling game over event, when tetriminos spawn and collide into each other. Exits
-   * the game when called
-   */
-  @FXML
-  public void gameOver() {
-    //Save score before exiting
-    ScoreRecorder.saveScore(scoreLabel.getText());
 
-    System.exit(0);
-  }
+    /**
+     * Method for handling game over event, when tetriminos spawn and collide into each other. Exits
+     * the game when called
+     *
+     * @throws IOException
+     */
+    @FXML
+    public void gameOver() throws IOException {
+        // Save score before exiting
+        ScoreRecorder.saveScore(scoreLabel.getText());
+
+        System.exit(0);
+    }
 }
