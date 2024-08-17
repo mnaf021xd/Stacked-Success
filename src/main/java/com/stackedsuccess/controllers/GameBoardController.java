@@ -1,6 +1,7 @@
 package com.stackedsuccess.controllers;
 
 import com.stackedsuccess.GameInstance;
+import com.stackedsuccess.ScoreRecorder;
 import com.stackedsuccess.tetriminos.Tetrimino;
 import java.util.*;
 import javafx.application.Platform;
@@ -262,13 +263,16 @@ public class GameBoardController implements GameInstance.TetriminoUpdateListener
         Image image = new Image("/images/" + tetrimino.getClass().getSimpleName() + ".png");
         holdPieceView.setImage(image);
     }
+  
+  /**
+   * Method for handling game over event, when tetriminos spawn and collide into each other. Exits
+   * the game when called
+   */
+  @FXML
+  public void gameOver() {
+    //Save score before exiting
+    ScoreRecorder.saveScore(scoreLabel.getText());
 
-    /**
-     * Method for handling game over event, when tetriminos spawn and collide into each other. Exits
-     * the game when called
-     */
-    @FXML
-    public void gameOver() {
-        System.exit(0);
-    }
+    System.exit(0);
+  }
 }
