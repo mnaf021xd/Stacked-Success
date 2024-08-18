@@ -55,5 +55,18 @@ class TetriminoTest {
         int after = t.getYPos();
         assertEquals(before, after);
     }
-    
+
+    @Test
+    public void testCollisionWithBoardBoundaries() {
+        Tetrimino t = gameBoard.getCurrentTetrimino();
+        t.setXPos(0);
+        t.setYPos(0);
+
+        assertTrue(gameBoard.checkCollision(-1, 0), "Tetrimino should collide when moving left out of bounds");
+        assertFalse(gameBoard.checkCollision(0, 1), "Tetrimino should not collide when moving down while it is in bounds");
+        t.setYPos(gameBoard.getHeight() - t.getHeight());
+        assertTrue(gameBoard.checkCollision(0, gameBoard.getHeight()), "Tetrimino should collide when moving down out of bounds");
+    }
+
+
 }

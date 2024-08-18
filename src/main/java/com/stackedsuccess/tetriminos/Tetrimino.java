@@ -120,7 +120,7 @@ public abstract class Tetrimino {
   }
 
   /** Adjust rotation of tetrimino if it would have gone out of bounds */
-  private int[] adjustPositionForBounds(int[][] rotatedLayout, GameBoard gameBoard) {
+  public int[] adjustPositionForBounds(int[][] rotatedLayout, GameBoard gameBoard) {
     int newX = xPos;
     int newY = yPos;
 
