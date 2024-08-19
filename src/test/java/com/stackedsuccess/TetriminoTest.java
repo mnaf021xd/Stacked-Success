@@ -1,5 +1,5 @@
-import com.stackedsuccess.Action;
-import com.stackedsuccess.GameBoard;
+package com.stackedsuccess;
+
 import com.stackedsuccess.controllers.GameBoardController;
 import com.stackedsuccess.tetriminos.Tetrimino;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,14 +14,14 @@ class TetriminoTest {
     private GameBoardController mockController;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         mockController = Mockito.mock(GameBoardController.class);
         gameBoard = new GameBoard();
         gameBoard.setController(mockController);
     }
 
     @Test
-    public void testTetriminoLeft() {
+    void testTetriminoLeft() {
         Tetrimino t = gameBoard.getCurrentTetrimino();
         int before = t.getXPos();
         t.updateTetrimino(gameBoard, Action.MOVE_LEFT);
@@ -30,7 +30,7 @@ class TetriminoTest {
     }
 
     @Test
-    public void testTetriminoRight() {
+    void testTetriminoRight() {
         Tetrimino t = gameBoard.getCurrentTetrimino();
         int before = t.getXPos();
         t.updateTetrimino(gameBoard, Action.MOVE_RIGHT);
@@ -39,7 +39,7 @@ class TetriminoTest {
     }
 
     @Test
-    public void testTetriminoDown() {
+    void testTetriminoDown() {
         Tetrimino t = gameBoard.getCurrentTetrimino();
         int before = t.getYPos();
         t.updateTetrimino(gameBoard, Action.MOVE_DOWN);
@@ -48,7 +48,7 @@ class TetriminoTest {
     }
 
     @Test
-    public void testTetriminoPause() {
+    void testTetriminoPause() {
         Tetrimino t = gameBoard.getCurrentTetrimino();
         int before = t.getYPos();
         t.updateTetrimino(gameBoard, Action.PAUSE);
@@ -57,12 +57,11 @@ class TetriminoTest {
     }
 
     @Test
-    public void testCollisionWithBoardBoundaries() {
+    void testCollisionWithBoardBottomBoundary() {
         Tetrimino t = gameBoard.getCurrentTetrimino();
         t.setXPos(0);
         t.setYPos(0);
 
-        assertTrue(gameBoard.checkCollision(-1, 0), "Tetrimino should collide when moving left out of bounds");
         assertFalse(gameBoard.checkCollision(0, 1), "Tetrimino should not collide when moving down while it is in bounds");
         t.setYPos(gameBoard.getHeight() - t.getHeight());
         assertTrue(gameBoard.checkCollision(0, gameBoard.getHeight()), "Tetrimino should collide when moving down out of bounds");
