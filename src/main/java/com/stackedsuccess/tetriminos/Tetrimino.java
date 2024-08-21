@@ -4,14 +4,17 @@ import com.stackedsuccess.Action;
 import com.stackedsuccess.GameBoard;
 
 public abstract class Tetrimino {
-  protected int[][] layout;
-  protected int width;
-  protected int height;
+  protected static int value;
 
-  private boolean hasHardDropped = false;
+  public static final int DEFAULT_SPAWN_X = 3;
+  public static final int DEFAULT_SPAWN_Y = 2;
 
   protected int xPos;
   protected int yPos;
+
+  protected int[][] layout;
+  protected int width;
+  protected int height;
 
   /**
    * Updates tetrimino based on given action and game board state.
@@ -23,34 +26,33 @@ public abstract class Tetrimino {
 
     switch (action) {
       case MOVE_LEFT:
-        if (!hasHardDropped && !gameBoard.checkCollision(xPos - 1, yPos)) xPos--;
+        if (!gameBoard.checkCollision(xPos - 1, yPos)) xPos--;
         break;
       case MOVE_RIGHT:
-        if (!hasHardDropped && !gameBoard.checkCollision(xPos + 1, yPos)) xPos++;
+        if (!gameBoard.checkCollision(xPos + 1, yPos)) xPos++;
         break;
       case MOVE_DOWN:
         if (!gameBoard.checkCollision(xPos, yPos + 1)) yPos++;
         break;
       case ROTATE_CLOCKWISE:
-        if (!hasHardDropped) {
-          rotateClockwise(gameBoard);
-        }
+        rotateClockwise(gameBoard);
         break;
       case ROTATE_COUNTERCLOCKWISE:
-        if (!hasHardDropped) {
-          rotateCounterClockwise(gameBoard);
-        }
+        rotateCounterClockwise(gameBoard);
         break;
       case HARD_DROP:
         while (!gameBoard.checkCollision(xPos, yPos + 1)) yPos++;
-        hasHardDropped = true;
+        gameBoard.forceUpdate();
         break;
       default:
-        return;
+        throw new IllegalArgumentException("Invalid tetrimino action " + action + " given.");
     }
-    // Calculate ghost position
-    int ghostY = calculateGhostY(gameBoard);
-    gameBoard.getController().updateGhostBlock(this, ghostY);
+  }
+
+  /** Resets the tetrimino piece to default position. */
+  public void resetPosition() {
+    xPos = Tetrimino.DEFAULT_SPAWN_X;
+    yPos = (width == 3) ? Tetrimino.DEFAULT_SPAWN_Y : Tetrimino.DEFAULT_SPAWN_Y - 1;
   }
 
   /**
@@ -78,6 +80,15 @@ public abstract class Tetrimino {
    */
   public int getHeight() {
     return height;
+  }
+
+  /**
+   * Check if the current tetrimino piece can move down one cell from current position.
+   *
+   * @return whether current tetrimino can move down one or not
+   */
+  public boolean canMoveDown(GameBoard gameBoard) {
+    return !gameBoard.checkCollision(xPos, yPos + 1);
   }
 
   /**
@@ -206,9 +217,5 @@ public abstract class Tetrimino {
    */
   public void setYPos(int yPos) {
     this.yPos = yPos;
-  }
-
-  public boolean getHasHardDropped() {
-    return hasHardDropped;
   }
 }

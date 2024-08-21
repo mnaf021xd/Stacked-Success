@@ -11,7 +11,6 @@ public class GameInstance {
 
   private boolean isGameOver;
   private int score;
-  private int line;
 
   private GameControls gameControls;
   private GameBoard gameBoard;
@@ -23,7 +22,6 @@ public class GameInstance {
 
   public GameInstance() {
     score = 0;
-    line = 0;
     gameDelay = 10;
     isPaused = false;
     isGameOver = false;
@@ -92,10 +90,9 @@ public class GameInstance {
 
   /** Toggles the game to be paused, halting game updates. */
   public void togglePause() {
-    isPaused = !isPaused;
+    if (!isGameOver) isPaused = !isPaused;
   }
 
-  // TODO: Refactor how an action is determined as a 'movement' action.
   /**
    * Check if the given Action will update tetrimino.
    *
@@ -109,15 +106,6 @@ public class GameInstance {
         || action == Action.HARD_DROP
         || action == Action.ROTATE_CLOCKWISE
         || action == Action.ROTATE_COUNTERCLOCKWISE;
-  }
-
-  /**
-   * Get the current Tetrimino.
-   *
-   * @return current tetrimino
-   */
-  public Tetrimino getCurrentTetrimino() {
-    return currentTetrimino;
   }
 
   /**
@@ -141,7 +129,7 @@ public class GameInstance {
   /**
    * Get game over status
    *
-   * @param score the score to set
+   * @return if game instance is over
    */
   public boolean isGameOver() {
     return isGameOver;
@@ -154,5 +142,6 @@ public class GameInstance {
    */
   public void setGameOver(boolean isGameOver) {
     this.isGameOver = isGameOver;
+    this.isPaused = isGameOver;
   }
 }
