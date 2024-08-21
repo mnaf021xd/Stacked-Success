@@ -1,6 +1,11 @@
 package com.stackedsuccess.controllers;
 
+import com.stackedsuccess.Action;
+import com.stackedsuccess.GameControls;
 import com.stackedsuccess.GameInstance;
+import com.stackedsuccess.Main;
+import com.stackedsuccess.SceneManager;
+import com.stackedsuccess.SceneManager.AppUI;
 import com.stackedsuccess.ScoreRecorder;
 import com.stackedsuccess.tetriminos.*;
 import java.io.IOException;
@@ -10,11 +15,14 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -36,6 +44,9 @@ public class GameBoardController {
   @FXML ImageView nextPieceView;
 
   @FXML Button pauseButton;
+  @FXML Pane pauseBackground;
+  @FXML Pane pauseLabelBackground;
+  @FXML Label pauseLabel;
 
   @FXML VBox gameOverBox;
   @FXML Label gameOverLabel;
@@ -68,6 +79,11 @@ public class GameBoardController {
         () -> {
           gameInstance.start();
           gameInstance.getGameBoard().setController(this);
+          nextPieceView.setImage(
+              new Image(
+                  "/images/"
+                      + gameInstance.getGameBoard().getNextTetrimino().getClass().getSimpleName()
+                      + ".png"));
           setWindowCloseHandler(getStage());
         });
   }
@@ -104,11 +120,7 @@ public class GameBoardController {
   @FXML
   public void gameOver() throws IOException {
     gameInstance.setGameOver(true);
-
-    // Save if score is a high score
-    if (ScoreRecorder.isHighScore(scoreLabel.getText())) {
-      ScoreRecorder.saveScore(scoreLabel.getText());
-    }
+    ScoreRecorder.saveScore(scoreLabel.getText());
 
     playGameOverAnimation();
   }
@@ -120,14 +132,35 @@ public class GameBoardController {
    */
   @FXML
   public void onKeyPressed(KeyEvent event) {
+    if (event.getCode() == KeyCode.ESCAPE) {
+      togglePauseScreen();
+    }
     gameInstance.handleInput(event);
+  }
+
+  private void togglePauseScreen(){
+    if(gameInstance.isPaused()){
+      basePane.requestFocus();
+      pauseBackground.toBack();
+      pauseLabelBackground.toBack();
+      pauseBackground.setOpacity(0);
+      pauseLabelBackground.setOpacity(0);
+    }
+    else{
+      pauseBackground.toFront();
+      pauseLabelBackground.toFront();
+      pauseLabel.setStyle("-fx-text-fill: #fdfad0; -fx-font-size: 85px;");
+      pauseButton.toFront();
+      pauseBackground.setOpacity(0.5);
+      pauseLabelBackground.setOpacity(1);
+    }
   }
 
   /** Pauses the game when the pause button is clicked. */
   @FXML
   public void onClickPauseButton() {
+    togglePauseScreen();
     gameInstance.togglePause();
-    basePane.requestFocus();
   }
 
   @FXML
@@ -136,8 +169,9 @@ public class GameBoardController {
   }
 
   @FXML
-  void onClickRestart(ActionEvent event) {
-    // will add functionality once main menu is made
+  void onClickRestart(ActionEvent event) throws IOException {
+    SceneManager.addScene(AppUI.MAIN_MENU, loadFxml("HomeScreen"));
+    Main.setUi(AppUI.MAIN_MENU);
   }
 
   /**
@@ -396,5 +430,16 @@ public class GameBoardController {
    */
   private Stage getStage() {
     return (Stage) basePane.getScene().getWindow();
+  }
+
+  /**
+   * Loads the FXML file and returns the parent node.
+   *
+   * @param fxml the name of the FXML file (without extension)
+   * @return the parent node of the input file
+   * @throws IOException if the file is not found
+   */
+  public static Parent loadFxml(final String fxml) throws IOException {
+    return new FXMLLoader(Main.class.getResource("/fxml/" + fxml + ".fxml")).load();
   }
 }
